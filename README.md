@@ -1,2 +1,2 @@
-# Select--Image-Tool-GUI
+# Select-Image-Tool-GUI
 code by python 
