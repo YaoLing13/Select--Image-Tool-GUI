@@ -16,17 +16,15 @@ class SelectImage(QMainWindow):
 
     def __init__(self, size_w, size_h, pos_w, pos_h, Title):
         super().__init__()
+        self.line=QLineEdit()
         self.src_dir = ''
         self.save_dir = ''
         self.del_dir = './del'
-        self.key_value = -1
         self.initUI(size_w, size_h, pos_w, pos_h, Title)
-        self.src_line = self.src_dir_text()
-        self.btn_src_open_dir()
-        self.save_line = self.save_dir_text()
-        self.btn_save_open_dir()
-        self.del_line = self.del_dir_text()
-        self.btn_del_open_dir()
+        # btn_open_dir(self, sb_w, sb_h, pb_w, pb_h, sl_w, sl_h, pl_w, pl_h, bt_name="", holdtext="", bt_tip="")
+        self.btn_open_dir(150,30, 30, 70,200,30,200,70, "Source dir", "Source dir", "Source dir", 1)
+        self.btn_open_dir(150,30, 30, 120,200,30,200,120, "Save dir", "Save dir", "Save dir", 2)
+        self.btn_open_dir(150, 30, 30, 170, 200, 30, 200, 170, "Delete dir", "Delete dir", "Delete dir", 3)
         self.btn_start()
         self.show()
 
@@ -72,85 +70,50 @@ class SelectImage(QMainWindow):
     #     else:
     #         event.ignore()
 
-    def open_src_dir(self):
-        directory = QFileDialog.getExistingDirectory(self, "select file", "./")  # start file
-        self.src_line.setText(directory)
-        self.src_dir = directory
-
-    def btn_src_open_dir(self):
-        name = "Open Src Dir"
-        s_w, s_h = 150, 30
-        p_w, p_h = 30, 70
-        tip = 'dir of source images'
-        btn = self.button_push(name, s_w, s_h, p_w, p_h, tip)
-        btn.clicked.connect(self.open_src_dir)
-
-
-    def open_save_dir(self):
-        directory = QFileDialog.getExistingDirectory(self, "select file", self.src_dir)  # start file
-        self.save_line.setText(directory)
-        self.save_dir = directory
-
-    def src_dir_text(self):
-        s_w, s_h = 200, 30
-        p_w, p_h = 200, 70
-        holdtext = 'source dir'
-        lineEdit = self.set_text(s_w, s_h, p_w, p_h, holdtext)
-        lineEdit.setReadOnly(True)
-        return lineEdit
-
-
-    def btn_save_open_dir(self):
-        name = "Open Save Dir"
-        s_w, s_h = 150, 30
-        p_w, p_h = 30, 120
-        tip = 'dir of save images'
-        btn = self.button_push(name, s_w, s_h, p_w, p_h, tip)
-        btn.clicked.connect(self.open_save_dir)
-
-
-    def save_dir_text(self):
-        s_w, s_h = 200, 30
-        p_w, p_h = 200, 120
-        holdtext = 'save dir'
-        lineEdit = self.set_text(s_w, s_h, p_w, p_h, holdtext)
-        lineEdit.setReadOnly(True)
-        return lineEdit
-
-
 ## delete file
-    def open_del_dir(self):
+    def open_dir(self, lineEdit, flag):
         directory = QFileDialog.getExistingDirectory(self, "select file", self.src_dir)  # start file
-        self.del_line.setText(directory)
-        self.del_dir = directory
+        lineEdit.setText(directory)
+        if flag == 3:
+            self.del_dir = directory
+            return
+        elif flag == 2:
+            self.save_dir = directory
+            return
+        else:
+            self.src_dir = directory
+            return
 
-    def del_dir_text(self):
-        s_w, s_h = 200, 30
-        p_w, p_h = 200, 170
-        holdtext = 'source dir'
+    def line_edit_text(self, s_w, s_h, p_w, p_h, holdtext=""):
         lineEdit = self.set_text(s_w, s_h, p_w, p_h, holdtext)
         lineEdit.setReadOnly(True)
         return lineEdit
 
 
-    def btn_del_open_dir(self):
-        name = "Open Del Dir"
-        s_w, s_h = 150, 30
-        p_w, p_h = 30, 170
-        tip = 'dir of del images'
+    def btn_open_dir(self, sb_w, sb_h, pb_w, pb_h, sl_w, sl_h, pl_w, pl_h,bt_name="", holdtext="", bt_tip="", flag=1):
+        btn = self.button_push(bt_name, sb_w, sb_h, pb_w, pb_h, bt_tip)
+        line = self.line_edit_text(sl_w, sl_h, pl_w, pl_h, holdtext)
+        btn.clicked.connect(lambda:self.open_dir(line, flag))
+
+    def btn_start(self):
+        name = "Begin"
+        s_w, s_h = 100, 50
+        p_w, p_h = 150, 220
+        tip = 'Begin select'
         btn = self.button_push(name, s_w, s_h, p_w, p_h, tip)
-        btn.clicked.connect(self.open_del_dir)
-
-
+        btn.clicked.connect(self.show_images)
 
     def show_images(self, event):
+        reply = -1
         if (self.src_dir == ''):
             QMessageBox.warning(self, 'Message', "Please choose source directoty of images !")
         elif (self.save_dir == ''):
             QMessageBox.warning(self, 'Message', "Please choose source directoty of images !")
         elif (self.del_dir == './del'):
-            QMessageBox.warning(self, 'Message', "del file is default: ./del")
+            reply = QMessageBox.information(self, 'Message', "del file is default: ./del")
         else:
+            reply = QMessageBox.Ok
+        if reply == QMessageBox.Ok:
             images = get_imags(self.src_dir)
             print("src_dir: %s " % self.src_dir)
             print("save_dir: %s " % self.save_dir)
@@ -161,11 +124,12 @@ class SelectImage(QMainWindow):
             index = 0
             cv2.namedWindow("src", cv2.WINDOW_NORMAL)
             while True:
+                print(images[index])
                 img = cv2.imread(images[index])
                 cv2.imshow("src", img)
-                c = cv2.waitKey(0)
-                # print(c)
-                if c == 97:  ## last image - 'a'
+                c = cv2.waitKey(0) % 255
+                print(c)
+                if c == 97 or c == 81 or c == 82:  ## last image - 'a'
                     index -= 1
                     if index < 0:
                         index = len(images)-1
@@ -173,13 +137,17 @@ class SelectImage(QMainWindow):
                         pass
                     continue
                 if c == 32 or c == 115: # save image - 's' or 'Spave'
-                    shutil.copy(images[index], self.save_dir)
-                    save_num += 1
+                    if not os.path.exists(self.save_dir+images[index][images[index].rfind('/'):]):
+                        shutil.copy(images[index], self.save_dir)
+                        save_num += 1
                     print("**** %d - dir: %s" % (save_num,images[index]))
                     index += 1
+                    if index > (len(images)-1):
+                        index = 0
+                    else:
+                        pass
                     continue
-                if c == 13: # next image- 'Enter'
-                    print(images[index])
+                if c == 13 or c == 83 or c == 84 or c == 100: # next image- 'Enter'
                     index += 1
                     if index > (len(images)-1):
                         index = 0
@@ -191,6 +159,10 @@ class SelectImage(QMainWindow):
                     # os.remove(images[index])
                     shutil.move(images[index], self.del_dir)
                     index += 1
+                    if index > (len(images)-1):
+                        index = 0
+                    else:
+                        pass
                 if c == 113: # Quit - 'q'
                     print("*********End: %s" % images[index])
                     print("Quit!")
@@ -199,14 +171,6 @@ class SelectImage(QMainWindow):
             print("Save image: %d" % save_num)
         return
 
-
-    def btn_start(self):
-        name = "Begin"
-        s_w, s_h = 100, 50
-        p_w, p_h = 150, 220
-        tip = 'Begin select'
-        btn = self.button_push(name, s_w, s_h, p_w, p_h, tip)
-        btn.clicked.connect(self.show_images)
 
 
 if __name__ == '__main__':
