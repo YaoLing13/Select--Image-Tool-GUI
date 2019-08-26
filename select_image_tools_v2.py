@@ -127,8 +127,8 @@ class SelectImage(QMainWindow):
                 print(images[index])
                 img = cv2.imread(images[index])
                 cv2.imshow("src", img)
-                c = cv2.waitKey(0) % 255
-                print(c)
+                c = cv2.waitKey(0)
+                # print(c)
                 if c == 97 or c == 81 or c == 82:  ## last image - 'a'
                     index -= 1
                     if index < 0:
@@ -141,11 +141,11 @@ class SelectImage(QMainWindow):
                         shutil.copy(images[index], self.save_dir)
                         save_num += 1
                     print("**** %d - dir: %s" % (save_num,images[index]))
-                    index += 1
-                    if index > (len(images)-1):
-                        index = 0
-                    else:
-                        pass
+                    #index += 1
+                    #if index > (len(images)-1):
+                    #    index = 0
+                    #else:
+                    #    pass
                     continue
                 if c == 13 or c == 83 or c == 84 or c == 100: # next image- 'Enter'
                     index += 1
