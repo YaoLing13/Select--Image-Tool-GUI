@@ -5,5 +5,7 @@ code by python
 
 # short-cut key:
 save - 's' or 'Space'
+
 previous - 'a'
+
 next - 'Enter' or 'd'
