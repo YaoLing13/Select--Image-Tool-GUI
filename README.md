@@ -13,7 +13,7 @@ quit - 'q'
 
 dele - 'Del'
 
-![avatar][./v2.png]
+![avatar](./v2.png)
 
 # v3
 ## short-cut key:
@@ -32,4 +32,4 @@ quit - 'q' or 'Esc'
 
 dele - 'Del'
 
-![avatar][./v3.png]
+![avatar](./v3.png)
