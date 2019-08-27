@@ -18,13 +18,15 @@ class SelectImage(QMainWindow):
         super().__init__()
         self.line=QLineEdit()
         self.src_dir = ''
-        self.save_dir = ''
+        self.save1_dir = ''
         self.del_dir = './del'
         self.initUI(size_w, size_h, pos_w, pos_h, Title)
         # btn_open_dir(self, sb_w, sb_h, pb_w, pb_h, sl_w, sl_h, pl_w, pl_h, bt_name="", holdtext="", bt_tip="")
-        self.btn_open_dir(150,30, 30, 70,200,30,200,70, "Source dir", "Source dir", "Source dir", 1)
-        self.btn_open_dir(150,30, 30, 120,200,30,200,120, "Save dir", "Save dir", "Save dir", 2)
-        self.btn_open_dir(150, 30, 30, 170, 200, 30, 200, 170, "Delete dir", "Delete dir", "Delete dir", 3)
+        self.btn_open_dir(150,30, 30, 70,200,30,200,70, "Source dir", "Source dir", "Source dir", -1)
+        self.btn_open_dir(150,30, 30, 120,200,30,200,120, "Save dir 1", "Save dir 1", "Save dir", 1)
+        self.btn_open_dir(150,30, 30, 170,200,30,200,170, "Save dir 2", "Save dir 2", "Save dir", 2)
+        self.btn_open_dir(150,30, 30, 220,200,30,200,220, "Save dir 3", "Save dir 3", "Save dir", 3)
+        self.btn_open_dir(150, 30, 30, 270, 200, 30, 200, 270, "Delete dir", "Delete dir", "Delete dir", 0)
         self.btn_start()
         self.show()
 
@@ -62,6 +64,11 @@ class SelectImage(QMainWindow):
         lineEdit.setEchoMode(QLineEdit.Normal)
         return lineEdit
 
+    # def set_key_text(self, s_w, s_h, p_w, p_h, holdtext=''):
+
+
+
+
     # def closeEvent(self, event):
     #     reply = QMessageBox.question(self, 'Message', "Are you sure to quit?",
     #          QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
@@ -74,11 +81,17 @@ class SelectImage(QMainWindow):
     def open_dir(self, lineEdit, flag):
         directory = QFileDialog.getExistingDirectory(self, "select file", self.src_dir)  # start file
         lineEdit.setText(directory)
-        if flag == 3:
+        if flag == 0:
             self.del_dir = directory
             return
+        elif flag == 1:
+            self.save1_dir = directory
+            return
         elif flag == 2:
-            self.save_dir = directory
+            self.save2_dir = directory
+            return
+        elif flag == 3:
+            self.save3_dir = directory
             return
         else:
             self.src_dir = directory
@@ -98,7 +111,7 @@ class SelectImage(QMainWindow):
     def btn_start(self):
         name = "Begin"
         s_w, s_h = 100, 50
-        p_w, p_h = 150, 220
+        p_w, p_h = 180, 320
         tip = 'Begin select'
         btn = self.button_push(name, s_w, s_h, p_w, p_h, tip)
         btn.clicked.connect(self.show_images)
@@ -107,7 +120,7 @@ class SelectImage(QMainWindow):
         reply = -1
         if (self.src_dir == ''):
             QMessageBox.warning(self, 'Message', "Please choose source directoty of images !")
-        elif (self.save_dir == ''):
+        elif (self.save1_dir == ''):
             QMessageBox.warning(self, 'Message', "Please choose source directoty of images !")
         elif (self.del_dir == './del'):
             reply = QMessageBox.information(self, 'Message', "del file is default: ./del")
@@ -116,11 +129,13 @@ class SelectImage(QMainWindow):
         if reply == QMessageBox.Ok:
             images = get_imags(self.src_dir)
             print("src_dir: %s " % self.src_dir)
-            print("save_dir: %s " % self.save_dir)
+            print("save1_dir: %s " % self.save1_dir)
             if not os.path.exists(self.del_dir):
                 os.mkdir(self.del_dir)
             print("del_dir: %s " % self.del_dir)
-            save_num = 0
+            save1_num = 0
+            save2_num = 0
+            save3_num = 0
             index = 0
             cv2.namedWindow("src", cv2.WINDOW_NORMAL)
             while True:
@@ -137,17 +152,24 @@ class SelectImage(QMainWindow):
                         pass
                     continue
                 if c == 32 or c == 115: # save image - 's' or 'Spave'
-                    if not os.path.exists(self.save_dir+images[index][images[index].rfind('/'):]):
-                        shutil.copy(images[index], self.save_dir)
-                        save_num += 1
-                    print("**** %d - dir: %s" % (save_num,images[index]))
-                    #index += 1
-                    #if index > (len(images)-1):
-                    #    index = 0
-                    #else:
-                    #    pass
+                    if not os.path.exists(self.save1_dir+images[index][images[index].rfind('/'):]):
+                        shutil.copy(images[index], self.save1_dir)
+                        save1_num += 1
+                    print("**** %d - save dir 1: %s" % (save1_num,images[index]))
                     continue
-                if c == 13 or c == 83 or c == 84 or c == 100: # next image- 'Enter'
+                if c == 100: # save image - 'd'
+                    if not os.path.exists(self.save2_dir+images[index][images[index].rfind('/'):]):
+                        shutil.copy(images[index], self.save2_dir)
+                        save2_num += 1
+                    print("**** %d - save dir 2: %s" % (save2_num,images[index]))
+                    continue
+                if c == 102: # save image - 'f'
+                    if not os.path.exists(self.save3_dir+images[index][images[index].rfind('/'):]):
+                        shutil.copy(images[index], self.save3_dir)
+                        save3_num += 1
+                    print("**** %d - save dir 3: %s" % (save3_num,images[index]))
+                    continue
+                if c == 13 or c == 83 or c == 84 : # next image- 'Enter'
                     index += 1
                     if index > (len(images)-1):
                         index = 0
@@ -168,7 +190,9 @@ class SelectImage(QMainWindow):
                     print("Quit!")
                     cv2.destroyAllWindows()
                     break
-            print("Save image: %d" % save_num)
+            print("Save dir 1 image: %d" % save1_num)
+            print("Save dir 2 image: %d" % save2_num)
+            print("Save dir 3 image: %d" % save3_num)
         return
 
 
@@ -180,5 +204,5 @@ if __name__ == '__main__':
     # w.move(600, 300) ## (W, H): show window position (left top), if not parent win, desktop will be parent
     # w.setWindowTitle("Select images to save")  ## Window title
     # w.show() # show win
-    se = SelectImage(450, 300, 600, 300, "Select images to save") # size_w, size_h, pos_w, pos_h
+    se = SelectImage(450, 500, 600, 300, "Select images to save") # size_w, size_h, pos_w, pos_h
     sys.exit(app.exec_())

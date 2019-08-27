@@ -4,12 +4,16 @@ code by python
 # Python Version: python3
 
 # short-cut key:
-save - 's' or 'Space'
+save (default dir1) - 's' or 'Space'
+
+save dir2 - 'd'
+
+save dir3 - 'f'
 
 prev - 'a'
 
-next - 'Enter' or 'd'
+next - 'Enter' 
 
-quit - 'q'
+quit - 'q' or 'Esc'
 
 dele - 'Del'
