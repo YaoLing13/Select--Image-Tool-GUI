@@ -8,7 +8,11 @@ import cv2
 import shutil
 
 def get_imags(dir):
-    images = glob.glob(dir+"/*.jpg")
+    images_1 = os.listdir(dir)
+    images_1.sort()
+    images = []
+    for image in images_1:
+        images.extend([dir + '/' + image])
     return images
 
 
@@ -191,7 +195,7 @@ class SelectImage(QMainWindow):
                     # os.remove(images[index])
                     shutil.move(images[index], self.del_dir)
                     index += 1
-                if c == 113: # Quit - 'q'
+                if c == 27: # Quit - 'ESC'
                     print("*********End: %s" % images[index])
                     print("Quit!")
                     cv2.destroyAllWindows()

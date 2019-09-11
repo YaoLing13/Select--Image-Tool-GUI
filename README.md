@@ -9,7 +9,7 @@ prev - 'a'
 
 next - 'Enter' or 'd' 
 
-quit - 'q'
+quit - 'ESC'
 
 dele - 'Del'
 
@@ -28,7 +28,7 @@ prev - 'a'
 
 next - 'Enter' 
 
-quit - 'q' or 'Esc'
+quit - 'Esc'
 
 dele - 'Del'
 
